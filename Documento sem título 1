@@ -1,0 +1,13 @@
+definições rest
+
+path params sao obrigatórios dentro da url 
+
+query params não são obrigatórias na url e é usado & para concatenar os parametros
+
+
+header params enviados no header da requisição
+
+
+body params
+
+
