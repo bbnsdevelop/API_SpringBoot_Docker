@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+ profiles:
+    active: prod
+ datasource:
+   driver-class-name: com.mysql.cj.jdbc.Driver
+
+#criacao automatica do banco pelo jpa
+ jpa:
+  hibernate.ddl-auto: update
+#------------------------------------#
+ 
