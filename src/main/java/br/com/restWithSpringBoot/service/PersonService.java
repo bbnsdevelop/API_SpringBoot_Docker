@@ -46,11 +46,24 @@ public class PersonService {
 		}
 		return per;
 	}
-	
-	private void updateList(List<Person> listToUpdate) {
-		persons = listToUpdate;
+	public void delete(Long id) {
+		
+		per = persons.stream().filter(p -> id == p.getId()).findAny().orElse(null);
+		if(per == null) {
+			throw new UnsuporteOperationException("Person not found");
+		}else {			
+			listToUpdate = new ArrayList<>();
+			persons.forEach(p -> {
+				if(p.getId() != id) {					
+					listToUpdate.add(p);
+				}
+			});
+			persons = new ArrayList<>();
+			updateList(listToUpdate);
+		}
 		
 	}
+	
 
 	public Person getPersonById(Long id) {
 		per = persons.stream().filter(p -> id == p.getId()).findAny().orElse(null);
@@ -60,5 +73,9 @@ public class PersonService {
 		return per;
 	}
 	
+	private void updateList(List<Person> listToUpdate) {
+		persons = listToUpdate;
+		
+	}
 	
 }
