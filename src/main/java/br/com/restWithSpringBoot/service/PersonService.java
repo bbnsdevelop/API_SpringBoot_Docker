@@ -1,81 +1,39 @@
 package br.com.restWithSpringBoot.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.restWithSpringBoot.exception.UnsuporteOperationException;
+import br.com.restWithSpringBoot.exception.ResourceOperationException;
 import br.com.restWithSpringBoot.model.Person;
+import br.com.restWithSpringBoot.repositories.PersonRepository;
 
 @Service
 public class PersonService {
-
-	private final AtomicLong counter = new AtomicLong();
 	
-	private List<Person> persons = new ArrayList<>();
-	private List<Person> listToUpdate = new ArrayList<>();
-	private Person per = new Person();
+	@Autowired
+	private PersonRepository personRepository;
 	
 	public List<Person> listAllPerson(){
-		return this.persons;
+		return this.personRepository.findAll();
 	}
 	
 	public Person save(Person person) {
-		person.setId(counter.addAndGet(1));
-		persons.add(person);
-		return person;
+		return personRepository.save(person);
 	}
 	
 	public Person update(Person person, Long id) {
-		per = persons.stream().filter(p -> id == p.getId()).findAny().orElse(null);
-		if(per == null) {
-			throw new UnsuporteOperationException("Person not found");
-		}else {
-			person.setId(id);
-			per = person;
-			listToUpdate = new ArrayList<>();
-			persons.forEach(p -> {
-				if(p.getId() == id) {
-					p = per;
-				}
-				listToUpdate.add(p);
-			});
-			updateList(listToUpdate);
-		}
-		return per;
+		this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
+		person.setId(id);
+		return personRepository.save(person);
 	}
 	public void delete(Long id) {
-		
-		per = persons.stream().filter(p -> id == p.getId()).findAny().orElse(null);
-		if(per == null) {
-			throw new UnsuporteOperationException("Person not found");
-		}else {			
-			listToUpdate = new ArrayList<>();
-			persons.forEach(p -> {
-				if(p.getId() != id) {					
-					listToUpdate.add(p);
-				}
-			});
-			persons = new ArrayList<>();
-			updateList(listToUpdate);
-		}
-		
+		this.personRepository.deleteById(id);
 	}
 	
-
 	public Person getPersonById(Long id) {
-		per = persons.stream().filter(p -> id == p.getId()).findAny().orElse(null);
-		if(per == null) {
-			throw new UnsuporteOperationException("Person not found");
-		}
-		return per;
-	}
-	
-	private void updateList(List<Person> listToUpdate) {
-		persons = listToUpdate;
-		
+		return this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
 	}
 	
 }

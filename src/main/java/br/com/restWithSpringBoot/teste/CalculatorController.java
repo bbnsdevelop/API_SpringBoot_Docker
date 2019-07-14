@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.restWithSpringBoot.exception.UnsuporteOperationException;
+import br.com.restWithSpringBoot.exception.ResourceOperationException;
 
 @RestController
 public class CalculatorController {
@@ -16,7 +16,7 @@ public class CalculatorController {
 	@GetMapping("/sum/{number1}/{number2}")
 	public Double sum(@PathVariable("number1") String number1,@PathVariable("number2") String number2) throws Exception {
 		if(!isNumeric(number1) || !isNumeric(number2)) {
-			throw new UnsuporteOperationException("Please set a numeric value");
+			throw new ResourceOperationException("Please set a numeric value");
 		}
 		Double result = convertToDouble(number1) + convertToDouble(number2);
 		return result;
@@ -26,7 +26,7 @@ public class CalculatorController {
 	@GetMapping("/subtraction/{number1}/{number2}")
 	public Double subtraction(@PathVariable("number1") String number1,@PathVariable("number2") String number2) throws Exception {
 		if(!isNumeric(number1) || !isNumeric(number2)) {
-			throw new UnsuporteOperationException("Please set a numeric value");
+			throw new ResourceOperationException("Please set a numeric value");
 		}
 		Double result = convertToDouble(number1) - convertToDouble(number2);
 		return result;
@@ -35,7 +35,7 @@ public class CalculatorController {
 	@GetMapping("/multiplication/{number1}/{number2}")
 	public Double multiplication(@PathVariable("number1") String number1,@PathVariable("number2") String number2) throws Exception {
 		if(!isNumeric(number1) || !isNumeric(number2)) {
-			throw new UnsuporteOperationException("Please set a numeric value");
+			throw new ResourceOperationException("Please set a numeric value");
 		}
 		Double result = convertToDouble(number1) * convertToDouble(number2);
 		return result;
@@ -43,9 +43,9 @@ public class CalculatorController {
 	@GetMapping("/division/{number1}/{number2}")
 	public Double division(@PathVariable("number1") String number1,@PathVariable("number2") String number2) throws Exception {
 		if(!isNumeric(number1) || !isNumeric(number2)) {
-			throw new UnsuporteOperationException("Please set a numeric value");
+			throw new ResourceOperationException("Please set a numeric value");
 		}if(number2.equals("0")) {
-			throw new UnsuporteOperationException("divisor can not be zero");
+			throw new ResourceOperationException("divisor can not be zero");
 		}
 		Double num1 = convertToDouble(number1);
 		Double num2 = convertToDouble(number2);
@@ -57,7 +57,7 @@ public class CalculatorController {
 	@GetMapping("/average/{number1}/{number2}")
 	public Double average(@PathVariable("number1") String number1,@PathVariable("number2") String number2) throws Exception {
 		if(!isNumeric(number1) || !isNumeric(number2)) {
-			throw new UnsuporteOperationException("Please set a numeric value");
+			throw new ResourceOperationException("Please set a numeric value");
 		}
 		Double result = convertToDouble(number1) + convertToDouble(number2) / 2;
 		return result;
