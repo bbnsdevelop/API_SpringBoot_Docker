@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.restWithSpringBoot.model.Person;
+import br.com.restWithSpringBoot.mapper.PersonVO;
 import br.com.restWithSpringBoot.service.PersonService;
 
 @RestController
@@ -25,25 +25,25 @@ public class PersonController {
 	private PersonService service;
 	
 	@GetMapping
-	public ResponseEntity<List<Person>> getAllPerson() {
+	public ResponseEntity<List<PersonVO>> getAllPerson() {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.listAllPerson());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Person> getPersonById(@PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> getPersonById(@PathVariable("id") Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.getPersonById(id));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Person> savePerson(@RequestBody Person person) {
+	public ResponseEntity<PersonVO> savePerson(@RequestBody PersonVO person) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.save(person));
 	}
 	@PutMapping("/{id}")
-	public ResponseEntity<Person> updatePerson(@PathVariable("id") Long id, @RequestBody Person person) {
+	public ResponseEntity<PersonVO> updatePerson(@PathVariable("id") Long id, @RequestBody PersonVO person) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.update(person, id));
 	}
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Person> deletePerson(@PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> deletePerson(@PathVariable("id") Long id) {
 		this.service.delete(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.restWithSpringBoot.exception.ResourceOperationException;
+import static br.com.restWithSpringBoot.mapper.MapperDozer.parseObject;
+import static br.com.restWithSpringBoot.mapper.MapperDozer.parseListObjects;
+import br.com.restWithSpringBoot.mapper.PersonVO;
 import br.com.restWithSpringBoot.model.Person;
 import br.com.restWithSpringBoot.repositories.PersonRepository;
 
@@ -15,25 +18,28 @@ public class PersonService {
 	@Autowired
 	private PersonRepository personRepository;
 	
-	public List<Person> listAllPerson(){
-		return this.personRepository.findAll();
+	
+	public List<PersonVO> listAllPerson(){
+		return parseListObjects(this.personRepository.findAll(), PersonVO.class);
 	}
 	
-	public Person save(Person person) {
-		return personRepository.save(person);
+	public PersonVO save(PersonVO person) {
+		var entity = parseObject(person, Person.class);
+		return parseObject(personRepository.save(entity), PersonVO.class);
 	}
 	
-	public Person update(Person person, Long id) {
+	public PersonVO update(PersonVO person, Long id) {
 		this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
 		person.setId(id);
-		return personRepository.save(person);
+		var entity = parseObject(person, Person.class);
+		return parseObject(personRepository.save(entity), PersonVO.class);
 	}
 	public void delete(Long id) {
 		this.personRepository.deleteById(id);
 	}
 	
-	public Person getPersonById(Long id) {
-		return this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
+	public PersonVO getPersonById(Long id) {
+		return parseObject(this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id)), PersonVO.class);
 	}
 	
 }
