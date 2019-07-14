@@ -24,21 +24,21 @@ public class PersonController {
 	@Autowired
 	private PersonService service;
 	
-	@GetMapping
+	@GetMapping(produces = {"application/json", "application/xml"})
 	public ResponseEntity<List<PersonVO>> getAllPerson() {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.listAllPerson());
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml"})
 	public ResponseEntity<PersonVO> getPersonById(@PathVariable("id") Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.getPersonById(id));
 	}
 	
-	@PostMapping
+	@PostMapping(produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
 	public ResponseEntity<PersonVO> savePerson(@RequestBody PersonVO person) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.save(person));
 	}
-	@PutMapping("/{id}")
+	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
 	public ResponseEntity<PersonVO> updatePerson(@PathVariable("id") Long id, @RequestBody PersonVO person) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.update(person, id));
 	}
