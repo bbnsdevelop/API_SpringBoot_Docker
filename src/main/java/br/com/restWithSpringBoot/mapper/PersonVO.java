@@ -2,11 +2,16 @@ package br.com.restWithSpringBoot.mapper;
 
 import java.io.Serializable;
 
-public class PersonVO implements Serializable{
+import org.springframework.hateoas.ResourceSupport;
+
+import com.github.dozermapper.core.Mapping;
+
+public class PersonVO extends ResourceSupport implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
+	@Mapping("id")
+	private Long key;
 	
 	private String firstName;
 	
@@ -19,19 +24,19 @@ public class PersonVO implements Serializable{
 	public PersonVO() {
 	}
 	
-	public PersonVO(Long id, String firstName, String lastName, String address, String gender) {
-		this.id = id;
+	public PersonVO(Long key, String firstName, String lastName, String address, String gender) {
+		this.key = key;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
 		this.gender = gender;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getKey() {
+		return key;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Long key) {
+		this.key = key;
 	}
 	public String getFirstName() {
 		return firstName;

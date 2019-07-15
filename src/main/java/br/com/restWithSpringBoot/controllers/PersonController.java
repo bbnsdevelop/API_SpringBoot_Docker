@@ -2,6 +2,8 @@ package br.com.restWithSpringBoot.controllers;
 
 import java.util.List;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,9 @@ public class PersonController {
 	
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<PersonVO> getPersonById(@PathVariable("id") Long id) {
-		return ResponseEntity.status(HttpStatus.OK).body(this.service.getPersonById(id));
+		PersonVO person = this.service.getPersonById(id);
+		person.add(linkTo(methodOn(PersonController.class).getPersonById(id)).withSelfRel());
+		return ResponseEntity.status(HttpStatus.OK).body(person);
 	}
 	
 	@PostMapping(produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})

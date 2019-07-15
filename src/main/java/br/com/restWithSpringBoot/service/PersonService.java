@@ -30,7 +30,7 @@ public class PersonService {
 	
 	public PersonVO update(PersonVO person, Long id) {
 		this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
-		person.setId(id);
+		person.setKey(id);
 		var entity = parseObject(person, Person.class);
 		return parseObject(personRepository.save(entity), PersonVO.class);
 	}
