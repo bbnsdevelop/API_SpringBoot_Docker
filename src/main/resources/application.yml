@@ -2,6 +2,8 @@ server:
     port: 8080
 
 spring:
+  jackson:
+    default-property-inclusion: non-null
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/rest_with_spring_boot?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC&useSSL=false

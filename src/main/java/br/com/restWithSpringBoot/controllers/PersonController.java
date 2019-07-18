@@ -28,7 +28,9 @@ public class PersonController {
 	
 	@GetMapping(produces = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<List<PersonVO>> getAllPerson() {
-		return ResponseEntity.status(HttpStatus.OK).body(this.service.listAllPerson());
+		List<PersonVO> persons = this.service.listAllPerson();
+		persons.forEach(p -> p.add(linkTo(methodOn(PersonController.class).getPersonById(p.getKey())).withSelfRel()));
+		return ResponseEntity.status(HttpStatus.OK).body(persons);
 	}
 	
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
@@ -40,12 +42,19 @@ public class PersonController {
 	
 	@PostMapping(produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<PersonVO> savePerson(@RequestBody PersonVO person) {
-		return ResponseEntity.status(HttpStatus.OK).body(this.service.save(person));
+		PersonVO personVo = this.service.save(person);
+		person.add(linkTo(methodOn(PersonController.class).getPersonById(personVo.getKey())).withSelfRel());
+		return ResponseEntity.status(HttpStatus.OK).body(personVo);
 	}
+	
 	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<PersonVO> updatePerson(@PathVariable("id") Long id, @RequestBody PersonVO person) {
-		return ResponseEntity.status(HttpStatus.OK).body(this.service.update(person, id));
+		PersonVO personVo = this.service.update(person, id);
+		person.add(linkTo(methodOn(PersonController.class).getPersonById(personVo.getKey())).withSelfRel());
+		return ResponseEntity.status(HttpStatus.OK).body(personVo);
 	}
+	
+	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<PersonVO> deletePerson(@PathVariable("id") Long id) {
 		this.service.delete(id);
