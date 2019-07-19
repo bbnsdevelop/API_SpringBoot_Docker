@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.restWithSpringBoot.mapper.PersonVO;
 import br.com.restWithSpringBoot.service.PersonService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
+@Api(value = "Service person", description = "End points of CRUD Person", tags = {"Service Peson"})
 @RestController
 @RequestMapping("/api/v1/persons")
 public class PersonController {
@@ -26,6 +30,7 @@ public class PersonController {
 	@Autowired
 	private PersonService service;
 	
+	@ApiOperation(value ="Find all person")
 	@GetMapping(produces = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<List<PersonVO>> getAllPerson() {
 		List<PersonVO> persons = this.service.listAllPerson();
@@ -33,13 +38,15 @@ public class PersonController {
 		return ResponseEntity.status(HttpStatus.OK).body(persons);
 	}
 	
+	@ApiOperation(value ="Find person by id")
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<PersonVO> getPersonById(@PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> getPersonById(@ApiParam(value="code of person") @PathVariable("id") Long id) {
 		PersonVO person = this.service.getPersonById(id);
 		person.add(linkTo(methodOn(PersonController.class).getPersonById(id)).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(person);
 	}
 	
+	@ApiOperation(value ="Create person")
 	@PostMapping(produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
 	public ResponseEntity<PersonVO> savePerson(@RequestBody PersonVO person) {
 		PersonVO personVo = this.service.save(person);
@@ -47,16 +54,18 @@ public class PersonController {
 		return ResponseEntity.status(HttpStatus.OK).body(personVo);
 	}
 	
+	@ApiOperation(value ="Update person")
 	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<PersonVO> updatePerson(@PathVariable("id") Long id, @RequestBody PersonVO person) {
+	public ResponseEntity<PersonVO> updatePerson(@ApiParam(value="code of person") @PathVariable("id") Long id, @RequestBody PersonVO person) {
 		PersonVO personVo = this.service.update(person, id);
 		person.add(linkTo(methodOn(PersonController.class).getPersonById(personVo.getKey())).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(personVo);
 	}
 	
 	
+	@ApiOperation(value ="Delete person by id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<PersonVO> deletePerson(@PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> deletePerson(@ApiParam(value="code of person") @PathVariable("id") Long id) {
 		this.service.delete(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

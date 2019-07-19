@@ -19,7 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.restWithSpringBoot.mapper.BookVO;
 import br.com.restWithSpringBoot.service.BookService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
+@Api(value = "Service book", description = "End points of CRUD book", tags = {"Service book"})
 @RestController
 @RequestMapping("/api/v1/book")
 public class BookController {
@@ -27,37 +31,41 @@ public class BookController {
 	@Autowired
 	private BookService service;
 	
+	@ApiOperation(value ="Find all book")
 	@GetMapping(produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<List<BookVO>> getAllPerson() {
+	public ResponseEntity<List<BookVO>> getAllBook() {
 		List<BookVO> books = this.service.listAllPerson();
 		books.forEach(b -> b.add(linkTo(methodOn(BookController.class).getBookById(b.getKey())).withSelfRel()));
 		return ResponseEntity.status(HttpStatus.OK).body(books);
 	}
 	
+	@ApiOperation(value ="Find book by id")
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<BookVO> getBookById(@PathVariable("id") Long id) {
+	public ResponseEntity<BookVO> getBookById(@ApiParam(value="code of book") @PathVariable("id") Long id) {
 		BookVO book = this.service.getPersonById(id);
 		book.add(linkTo(methodOn(BookController.class).getBookById(id)).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(book);
 	}
 	
+	@ApiOperation(value ="Create book")
 	@PostMapping(produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<BookVO> savePerson(@RequestBody BookVO book) {
+	public ResponseEntity<BookVO> saveBook(@RequestBody BookVO book) {
 		BookVO bookVO = this.service.save(book);
 		book.add(linkTo(methodOn(BookController.class).getBookById(bookVO.getKey())).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(bookVO);
 	}
 	
+	@ApiOperation(value ="Create book")
 	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<BookVO> updateBook(@PathVariable("id") Long id, @RequestBody BookVO book) {
+	public ResponseEntity<BookVO> updateBook(@ApiParam(value="code of book") @PathVariable("id") Long id, @RequestBody BookVO book) {
 		BookVO bookVO = this.service.update(book, id);
 		book.add(linkTo(methodOn(BookController.class).getBookById(bookVO.getKey())).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(bookVO);
 	}
 	
-	
+	@ApiOperation(value ="Delete book by id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<BookVO> deletePerson(@PathVariable("id") Long id) {
+	public ResponseEntity<BookVO> deleteBook(@ApiParam(value="code of book") @PathVariable("id") Long id) {
 		this.service.delete(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
