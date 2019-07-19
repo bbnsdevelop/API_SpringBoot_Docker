@@ -1,60 +1,49 @@
-package br.com.restWithSpringBoot.model;
+package br.com.restWithSpringBoot.mapper;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import org.springframework.hateoas.ResourceSupport;
 
-@Entity
-@Table(name="book")
-public class Book implements Serializable{
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+
+@JsonPropertyOrder({"id", "author", "launchDate", "price", "title"})
+public class BookVO  extends ResourceSupport implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Mapping("id")
+	@JsonProperty("id")
+	private Long key;
 	
-	@Column(nullable = false)
 	private String author;
 	
-
-	@Column(name ="launch_date")
-	@Temporal(TemporalType.DATE)
 	private Date launchDate;
 	
-	@Column(nullable = false)
 	private BigDecimal price;
 	
-	@Column(nullable = false)
 	private String title;
 
-	public Book() {
-	
+	public BookVO() {
 	}
 
-	public Book(Long id, String author, Date launchDate, BigDecimal price, String title) {
-		this.id = id;
+	public BookVO(Long key, String author, Date launchDate, BigDecimal price, String title) {
+		this.key = key;
 		this.author = author;
 		this.launchDate = launchDate;
 		this.price = price;
 		this.title = title;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getKey() {
+		return key;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Long key) {
+		this.key = key;
 	}
 
 	public String getAuthor() {
@@ -90,4 +79,6 @@ public class Book implements Serializable{
 	}
 	
 	
+	
+
 }
