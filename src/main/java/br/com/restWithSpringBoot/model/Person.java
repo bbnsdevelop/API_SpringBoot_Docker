@@ -31,16 +31,9 @@ public class Person implements Serializable{
 	@Column( nullable = false, length = 10)
 	private String gender;
 	
-	public Person() {
-	}
+	@Column( nullable = false)
+	private Boolean enabled;
 	
-	public Person(Long id, String firstName, String lastName, String address, String gender) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.address = address;
-		this.gender = gender;
-	}
 
 	public Long getId() {
 		return id;
@@ -72,5 +65,13 @@ public class Person implements Serializable{
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
+	public Boolean getEnabled() {
+		return enabled;
+	}
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	
 
 }

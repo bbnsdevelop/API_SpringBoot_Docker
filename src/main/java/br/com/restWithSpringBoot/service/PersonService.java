@@ -41,5 +41,19 @@ public class PersonService {
 	public PersonVO getPersonById(Long id) {
 		return parseObject(this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id)), PersonVO.class);
 	}
+
+	public String disableOrEnablePerson(Boolean disable, Long id) {
+		
+		this.personRepository.findById(id).orElseThrow(() -> new ResourceOperationException("Person not found id =" + id));
+		int row = this.personRepository.disableOrEnablePerson(id, disable);
+		if(row >= 1 && disable) {
+			return "Person has been successfully disabled"; 
+		}else if(row >= 1 && !disable) {
+			return "Person has been successfully enabled";
+		}
+		else {
+			return "it was not possible to do the operation";
+		}
+	}
 	
 }

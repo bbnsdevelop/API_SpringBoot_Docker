@@ -17,9 +17,13 @@ import org.springframework.stereotype.Service;
 
 import br.com.restWithSpringBoot.exception.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class JwtTokeProvider {
@@ -59,7 +63,7 @@ public class JwtTokeProvider {
 
 	public String resolveToken(HttpServletRequest req) {
 
-		String bearerToken = req.getHeader("Athorization");
+		String bearerToken = req.getHeader("Authorization");
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7, bearerToken.length());
 		}
@@ -74,7 +78,7 @@ public class JwtTokeProvider {
 				return false;
 			}
 			return true;
-		} catch (Exception e) {
+		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
 			throw new InvalidJwtAuthenticationException("Expired or invalid token");
 		}
 
