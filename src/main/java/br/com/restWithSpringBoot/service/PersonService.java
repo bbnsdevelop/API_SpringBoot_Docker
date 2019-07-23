@@ -3,6 +3,7 @@ package br.com.restWithSpringBoot.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.restWithSpringBoot.exception.ResourceOperationException;
@@ -19,8 +20,9 @@ public class PersonService {
 	private PersonRepository personRepository;
 	
 	
-	public List<PersonVO> listAllPerson(){
-		return parseListObjects(this.personRepository.findAll(), PersonVO.class);
+	public List<PersonVO> listAllPerson(Pageable pageable){
+		var entities = this.personRepository.findAll(pageable).getContent();
+		return parseListObjects(entities, PersonVO.class);
 	}
 	
 	public PersonVO save(PersonVO person) {

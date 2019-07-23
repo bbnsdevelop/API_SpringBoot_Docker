@@ -110,10 +110,10 @@ public class UserService implements UserDetailsService{
 		return this.userRepository.save(user);
 	}
 	private UserVO setupInitial(UserVO user) {
-		user.setAccountNomExpired(false);
-		user.setAccountNonLocked(false);
-		user.setCredentialsNonExpired(false);
-		user.setEnabled(false);
+		user.setAccountNomExpired(true);
+		user.setAccountNonLocked(true);
+		user.setCredentialsNonExpired(true);
+		user.setEnabled(true);
 		return user;
 	}
 	
