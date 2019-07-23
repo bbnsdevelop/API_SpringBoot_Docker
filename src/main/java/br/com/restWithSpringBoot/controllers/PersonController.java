@@ -5,10 +5,13 @@ import java.util.List;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,17 +39,20 @@ public class PersonController {
 	@Autowired
 	private PersonService service;
 	
+	@SuppressWarnings("unchecked")
 	@ApiOperation(value ="Find all person")
 	@GetMapping(produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<List<PersonVO>> getAllPerson(
+	public ResponseEntity<PagedResources<PersonVO>> getAllPerson(
 			@RequestParam(value="page", defaultValue ="0") int page, 
 			@RequestParam(value="limit", defaultValue ="15") int limit,
-			@RequestParam(value="onderby", defaultValue ="asc") String onderby) {
+			@RequestParam(value="onderby", defaultValue ="asc") String onderby, @SuppressWarnings("rawtypes") PagedResourcesAssembler assembler) {
 		var sortDirection = "desc".equalsIgnoreCase(onderby) ? Direction.DESC : Direction.ASC;
+		
+		
 		Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection , "firstName"));
-		List<PersonVO> persons = this.service.listAllPerson(pageable);
+		Page<PersonVO> persons = this.service.listAllPerson(pageable);
 		persons.forEach(p -> p.add(linkTo(methodOn(PersonController.class).getPersonById(p.getKey())).withSelfRel()));
-		return ResponseEntity.status(HttpStatus.OK).body(persons);
+		return ResponseEntity.status(HttpStatus.OK).body(assembler.toResource(persons));
 	}
 	
 	@ApiOperation(value ="Find person by id")

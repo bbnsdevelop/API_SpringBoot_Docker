@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import br.com.restWithSpringBoot.exception.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -79,8 +78,9 @@ public class JwtTokeProvider {
 			}
 			return true;
 		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-			throw new InvalidJwtAuthenticationException("Expired or invalid token");
 		}
+		return false;
+		//throw new InvalidJwtAuthenticationException("Expired or invalid token");
 
 	}
 }

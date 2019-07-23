@@ -1,14 +1,14 @@
 package br.com.restWithSpringBoot.service;
 
-import java.util.List;
+import static br.com.restWithSpringBoot.mapper.MapperDozer.parseListObjects;
+import static br.com.restWithSpringBoot.mapper.MapperDozer.parseObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.restWithSpringBoot.exception.ResourceOperationException;
-import static br.com.restWithSpringBoot.mapper.MapperDozer.parseObject;
-import static br.com.restWithSpringBoot.mapper.MapperDozer.parseListObjects;
 import br.com.restWithSpringBoot.mapper.PersonVO;
 import br.com.restWithSpringBoot.model.Person;
 import br.com.restWithSpringBoot.repositories.PersonRepository;
@@ -20,9 +20,13 @@ public class PersonService {
 	private PersonRepository personRepository;
 	
 	
-	public List<PersonVO> listAllPerson(Pageable pageable){
-		var entities = this.personRepository.findAll(pageable).getContent();
-		return parseListObjects(entities, PersonVO.class);
+	public Page<PersonVO> listAllPerson(Pageable pageable){
+		var page = this.personRepository.findAll(pageable);
+		return page.map(this::convertToPersonVo);
+	}
+	
+	private PersonVO convertToPersonVo(Person entity) {
+		return parseObject(entity, PersonVO.class);
 	}
 	
 	public PersonVO save(PersonVO person) {
