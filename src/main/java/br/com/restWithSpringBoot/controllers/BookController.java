@@ -3,9 +3,14 @@ package br.com.restWithSpringBoot.controllers;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.restWithSpringBoot.mapper.BookVO;
@@ -33,15 +39,21 @@ public class BookController {
 	
 	@ApiOperation(value ="Find all book")
 	@GetMapping(produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<List<BookVO>> getAllBook() {
-		List<BookVO> books = this.service.listAllPerson();
+	public ResponseEntity<PagedResources<BookVO>> getAllBook(@RequestParam(value="page", defaultValue ="0") int page, 
+			@RequestParam(value="limit", defaultValue ="15") int limit,
+			@RequestParam(value="onderby", defaultValue ="asc") String onderby, @SuppressWarnings("rawtypes") PagedResourcesAssembler assembler) {
+		var sortDirection = "desc".equalsIgnoreCase(onderby) ? Direction.DESC : Direction.ASC;
+		
+		
+		Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection , "author"));
+		Page<BookVO> books = this.service.listAllPerson(pageable);
 		books.forEach(b -> b.add(linkTo(methodOn(BookController.class).getBookById(b.getKey())).withSelfRel()));
-		return ResponseEntity.status(HttpStatus.OK).body(books);
+		return ResponseEntity.status(HttpStatus.OK).body(assembler.toResource(books));
 	}
 	
 	@ApiOperation(value ="Find book by id")
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<BookVO> getBookById(@ApiParam(value="code of book") @PathVariable("id") Long id) {
+	public ResponseEntity<BookVO> getBookById(@ApiParam("code of book") @PathVariable("id") Long id) {
 		BookVO book = this.service.getPersonById(id);
 		book.add(linkTo(methodOn(BookController.class).getBookById(id)).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(book);
@@ -57,7 +69,7 @@ public class BookController {
 	
 	@ApiOperation(value ="Create book")
 	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<BookVO> updateBook(@ApiParam(value="code of book") @PathVariable("id") Long id, @RequestBody BookVO book) {
+	public ResponseEntity<BookVO> updateBook(@ApiParam("code of book") @PathVariable("id") Long id, @RequestBody BookVO book) {
 		BookVO bookVO = this.service.update(book, id);
 		book.add(linkTo(methodOn(BookController.class).getBookById(bookVO.getKey())).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(bookVO);
@@ -65,7 +77,7 @@ public class BookController {
 	
 	@ApiOperation(value ="Delete book by id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<BookVO> deleteBook(@ApiParam(value="code of book") @PathVariable("id") Long id) {
+	public ResponseEntity<BookVO> deleteBook(@ApiParam("code of book") @PathVariable("id") Long id) {
 		this.service.delete(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

@@ -1,11 +1,10 @@
 package br.com.restWithSpringBoot.service;
 
-import static br.com.restWithSpringBoot.mapper.MapperDozer.parseListObjects;
 import static br.com.restWithSpringBoot.mapper.MapperDozer.parseObject;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.restWithSpringBoot.exception.ResourceOperationException;
@@ -19,8 +18,12 @@ public class BookService {
 	@Autowired
 	private BookRepository bookRepository;
 	
-	public List<BookVO> listAllPerson(){
-		return parseListObjects(this.bookRepository.findAll(), BookVO.class);
+	public Page<BookVO> listAllPerson(Pageable pageable){
+		var page = this.bookRepository.findAll(pageable);
+		return page.map(this::convertToBookVo);
+	}	
+	private BookVO convertToBookVo(Book entity) {
+		return parseObject(entity, BookVO.class);
 	}
 	
 	public BookVO save(BookVO book) {

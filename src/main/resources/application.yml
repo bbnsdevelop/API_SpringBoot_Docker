@@ -2,6 +2,12 @@ server:
     port: 8080
 
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB 
   jackson:
     default-property-inclusion: non-null
   datasource:
@@ -17,5 +23,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+file:
+  upload-dir: /home/snow/Imagens/uploadDir
 
  

@@ -1,6 +1,5 @@
 package br.com.restWithSpringBoot.service;
 
-import static br.com.restWithSpringBoot.mapper.MapperDozer.parseListObjects;
 import static br.com.restWithSpringBoot.mapper.MapperDozer.parseObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,11 @@ public class PersonService {
 	
 	public Page<PersonVO> listAllPerson(Pageable pageable){
 		var page = this.personRepository.findAll(pageable);
+		return page.map(this::convertToPersonVo);
+	}
+	
+	public Page<PersonVO> listPersonByFirstName(String firstName, Pageable pageable){
+		var page = this.personRepository.findByFirstName(firstName, pageable);
 		return page.map(this::convertToPersonVo);
 	}
 	

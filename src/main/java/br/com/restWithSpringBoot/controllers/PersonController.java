@@ -1,9 +1,8 @@
 package br.com.restWithSpringBoot.controllers;
 
-import java.util.List;
-
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,9 +54,25 @@ public class PersonController {
 		return ResponseEntity.status(HttpStatus.OK).body(assembler.toResource(persons));
 	}
 	
+	@SuppressWarnings("unchecked")
+	@ApiOperation(value ="Find all person")
+	@GetMapping(value ="/{firstName}",produces = {"application/json", "application/xml", "application/x-yaml"})
+	public ResponseEntity<PagedResources<PersonVO>> getPersonByFirstName( @PathVariable("firstName") String firstName,
+			@RequestParam(value="page", defaultValue ="0") int page, 
+			@RequestParam(value="limit", defaultValue ="15") int limit,
+			@RequestParam(value="onderby", defaultValue ="asc") String onderby, @SuppressWarnings("rawtypes") PagedResourcesAssembler assembler) {
+		var sortDirection = "desc".equalsIgnoreCase(onderby) ? Direction.DESC : Direction.ASC;
+		
+		
+		Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection , "firstName"));
+		Page<PersonVO> persons = this.service.listPersonByFirstName(firstName, pageable);
+		persons.forEach(p -> p.add(linkTo(methodOn(PersonController.class).getPersonById(p.getKey())).withSelfRel()));
+		return ResponseEntity.status(HttpStatus.OK).body(assembler.toResource(persons));
+	}
+	
 	@ApiOperation(value ="Find person by id")
 	@GetMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<PersonVO> getPersonById(@ApiParam(value="code of person") @PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> getPersonById(@ApiParam("code of person") @PathVariable("id") Long id) {
 		PersonVO person = this.service.getPersonById(id);
 		person.add(linkTo(methodOn(PersonController.class).getPersonById(id)).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(person);
@@ -73,7 +88,7 @@ public class PersonController {
 	
 	@ApiOperation(value ="Update person")
 	@PutMapping(value = "/{id}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<PersonVO> updatePerson(@ApiParam(value="code of person") @PathVariable("id") Long id, @RequestBody PersonVO person) {
+	public ResponseEntity<PersonVO> updatePerson(@ApiParam("code of person") @PathVariable("id") Long id, @RequestBody PersonVO person) {
 		PersonVO personVo = this.service.update(person, id);
 		person.add(linkTo(methodOn(PersonController.class).getPersonById(personVo.getKey())).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(personVo);
@@ -81,14 +96,14 @@ public class PersonController {
 	
 	@ApiOperation(value ="Disable or enable the person")
 	@PatchMapping(value = "/{id}/{disable}", produces = {"application/json", "application/xml", "application/x-yaml"}, consumes = {"application/json", "application/xml", "application/x-yaml"})
-	public ResponseEntity<String> disableOrEnablePerson(@ApiParam(value="code of person") @PathVariable("id") Long id, @PathVariable("disable") Boolean disable) {
+	public ResponseEntity<String> disableOrEnablePerson(@ApiParam("code of person") @PathVariable("id") Long id, @PathVariable("disable") Boolean disable) {
 		return ResponseEntity.status(HttpStatus.OK).body(this.service.disableOrEnablePerson(disable, id));
 	}
 	
 	
 	@ApiOperation(value ="Delete person by id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<PersonVO> deletePerson(@ApiParam(value="code of person") @PathVariable("id") Long id) {
+	public ResponseEntity<PersonVO> deletePerson(@ApiParam("code of person") @PathVariable("id") Long id) {
 		this.service.delete(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
