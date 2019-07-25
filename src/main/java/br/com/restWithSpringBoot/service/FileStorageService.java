@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.restWithSpringBoot.config.FileStorageConfig;
 import br.com.restWithSpringBoot.exception.FileStorageException;
+import br.com.restWithSpringBoot.exception.FileStorageNotFoundException;
 import br.com.restWithSpringBoot.mapper.UploadFileResponseVO;
 
 @Service
@@ -51,6 +54,20 @@ public class FileStorageService {
 			return new UploadFileResponseVO(fileName, fileDownloadUri(fileName), file.getContentType(), file.getSize());
 		} catch (Exception e) {
 			throw new FileStorageException("Could not store file" +fileName+". Please try again", e);
+		}
+	}
+	
+	public Resource loadFileResource(String fileName) {		
+		try {
+			Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+			Resource resource = new UrlResource(filePath.toUri());
+			if(resource.exists()) {
+				return resource;
+			}else {
+				throw new FileStorageNotFoundException("File not found "+fileName);
+			}
+		} catch (Exception e) {
+			throw new FileStorageNotFoundException("File not found "+fileName, e);
 		}
 	}
 	
