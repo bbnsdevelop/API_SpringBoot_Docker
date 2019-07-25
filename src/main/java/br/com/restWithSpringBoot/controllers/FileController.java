@@ -1,5 +1,7 @@
 package br.com.restWithSpringBoot.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,11 @@ public class FileController {
 		return ResponseEntity.status(HttpStatus.OK).body(this.fileStorageService.storeFile(file));
 	}
 	
+	@ApiOperation(value ="Upload mult files")
+	@PostMapping(value ="/upload-multi")
+	public ResponseEntity<List<UploadFileResponseVO>> uploadMultiFiles(@RequestParam("files") MultipartFile[] files) {
+		return ResponseEntity.status(HttpStatus.OK).body(this.fileStorageService.storeFiles(files));
+	}
 	
 
 }

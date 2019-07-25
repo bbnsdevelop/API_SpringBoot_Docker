@@ -4,6 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,10 +28,14 @@ public class FileStorageService {
 		this.fileStorageLocation = Paths.get(config.getUploadDir()).toAbsolutePath().normalize();
 
 		try {
-
+			Files.createDirectories(this.fileStorageLocation);
 		} catch (Exception e) {
 			throw new FileStorageException("Could not create the directory where the upload files will be stored", e);
 		}
+	}
+	
+	public List<UploadFileResponseVO> storeFiles(MultipartFile[] files){
+		return Arrays.asList(files).stream().map(f -> storeFile(f)).collect(Collectors.toList());
 	}
 
 	public UploadFileResponseVO storeFile(MultipartFile file) {
