@@ -1,0 +1,18 @@
+language: bash
+services: docker
+before_install:
+  - cd ../API_SpringBoot_Docker
+  - echo "we are in folder ${PWD}"
+script:
+  - docker-compose build
+before_deploy:
+  - echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+deploy:
+  provider: script
+  script: 
+    docker push bbnsdevelop/mysql-rest-with-spring-boot-udemy;
+    docker push bbnsdevelop/rest-with-spring-boot-udemy;
+  on:
+    branch: master
+notifications:
+  email: false
